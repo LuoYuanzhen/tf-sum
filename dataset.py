@@ -10,6 +10,8 @@ import re
 from os.path import abspath
 import nltk
 
+nltk.data.path.append("/root/autodl-tmp/nltk_data")
+
 
 def parse(path):
     with open(path, "r") as f:
@@ -284,7 +286,7 @@ def preprocess_trees():
 
 
 if __name__ == "__main__":
-    nltk.download('punkt')
+    # nltk.download('punkt')
     sys.setrecursionlimit(10000)
     pickling()
     make_dict()

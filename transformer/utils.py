@@ -10,8 +10,8 @@ def positional_encoding(position, d_model):
         return pos * angle_rates
 
     angle_rads = get_angles(
-        tf.arange(position)[:, tf.newaxis],
-        tf.arange(d_model)[tf.newaxis, :],
+        tf.range(position)[:, tf.newaxis],
+        tf.range(d_model)[tf.newaxis, :],
         d_model
     )
     angle_rads = tf.cast(angle_rads, dtype=tf.float32).numpy()

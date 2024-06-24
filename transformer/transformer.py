@@ -3,8 +3,8 @@ import tensorflow as tf
 
 from tensorflow import Variable
 
-from layers import EncoderLayer, DecoderLayer
-from utils import positional_encoding
+from .layers import EncoderLayer, DecoderLayer
+from .utils import positional_encoding
 
 
 class Encoder(tf.keras.layers.Layer):
@@ -262,7 +262,7 @@ class Transformer(tf.keras.Model):
 
         loss_ = self.loss_object(labels=real, logits=pred)
         mask = tf.cast(mask, dtype=loss_.dtype)
-        loss_ *= mask
+        # loss_ *= mask.reshape(-1)
 
         return tf.reduce_mean(loss_)
     

@@ -6,7 +6,10 @@ from collections import defaultdict
 import pickle
 from prefetch_generator import BackgroundGenerator
 import rouge
+import nltk
 from nltk.translate.meteor_score import single_meteor_score
+
+nltk.data.path.append("/root/autodl-tmp/nltk_data")
 
 
 rg = rouge.Rouge()
@@ -24,8 +27,8 @@ def rouge_n(preds, trues):
 def meteor(preds, trues):
     meteor_scores = []
     for pred, true in zip(preds, trues):
-        pred = " ".join(pred)
-        true = " ".join(true)
+        # pred = " ".join(pred)
+        # true = " ".join(true)
         meteor_score = single_meteor_score(true, pred)
         meteor_scores.append(meteor_score)
     return meteor_scores, sum(meteor_scores) / len(meteor_scores)
@@ -441,7 +444,19 @@ class Datagen_deepcom:
             yield x, y, x_raw, y_raw
 
 
-def get_length(tensor, pad_value=-1.):
+def get_length(tensor, pad_value=-1):
     '''tensor: [batch, max_len]'''
     mask = tf.not_equal(tensor, pad_value)
     return tf.reduce_sum(tf.cast(mask, tf.int32), 1)
+
+
+if __name__ == "__main__":
+    preds = [
+        ["hello", "world"],
+        ["does", "not", "matter"]
+    ]
+    trues = [
+        ["say", "hello", "to", "world"],
+        ["it", "does", "not", "really", "matter"]
+    ]
+    print(meteor(preds, trues))

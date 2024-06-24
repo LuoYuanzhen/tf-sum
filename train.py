@@ -77,9 +77,9 @@ nl_i2w = read_pickle("dataset/nl_i2w.pkl")
 nl_w2i = read_pickle("dataset/nl_w2i.pkl")
 
 if args.debug:
-    trn_data = zip(*sorted(trn_data.items())[:1000])
-    vld_data = zip(*sorted(vld_data.items())[:1000])
-    tst_data = zip(*sorted(tst_data.items())[:1000])
+    trn_x, trn_y_raw = zip(*sorted(trn_data.items())[:1000])
+    vld_x, vld_y_raw = zip(*sorted(vld_data.items())[:1000])
+    tst_x, tst_y_raw = zip(*sorted(tst_data.items())[:1000])
 else:
     trn_x, trn_y_raw = zip(*sorted(trn_data.items()))
     vld_x, vld_y_raw = zip(*sorted(vld_data.items()))
@@ -162,15 +162,15 @@ with writer.as_default(), tf.contrib.summary.always_record_summaries():
         loss_tmp = []
         t = tqdm(trn_gen(0))
         for bid, (x, y, _, _) in enumerate(t):
-            if bid < 1:
-                print(len(code_i2w), list(code_i2w.values())[:10])
-                print(len(nl_i2w), list(nl_i2w.values())[:10])
-                print("**** SAMPLE ****")
-                print(nl_w2i["<s>"], nl_w2i["<\s>"], nl_w2i["<equation>", nl_w2i["the"]])
-                print(x[0, :])
-                print([code_i2w[n] for n in x[0, :].numpy().tolist() if n != -1])
-                print(y[0, :])
-                print([nl_i2w[n] for n in y[0, :].numpy().tolist() if n != -1])
+            # if bid < 1:
+                # print(len(code_i2w), list(code_i2w.values())[:10])
+                # print(len(nl_i2w), list(nl_i2w.values())[:10])
+                # print("**** SAMPLE ****")
+                # print(nl_w2i["<s>"], nl_w2i["</s>"], nl_w2i["the"])
+                # print(x[0, :])
+                # print([code_i2w[n] for n in x[0, :].numpy().tolist() if n != -1])
+                # print(y[0, :])
+                # print([nl_i2w[n] for n in y[0, :].numpy().tolist() if n != -1])
             loss_tmp.append(model.train_on_batch(x, y))
             t.set_description("epoch:{:03d}, loss = {}".format(epoch, np.mean(loss_tmp)))
         history["loss"].append(np.sum(loss_tmp) / len(t))
@@ -200,9 +200,9 @@ with writer.as_default(), tf.contrib.summary.always_record_summaries():
         tf.contrib.summary.scalar("bleu_val", np.mean(bleus), step=epoch)
 
         # checkpoint
-        checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
-        hoge = root.save(file_prefix=checkpoint_prefix)
         if history["bleu_val"][-1] == max(history["bleu_val"]):
+            checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
+            hoge = root.save(file_prefix=checkpoint_prefix)
             best_model = hoge
             print("Now best model is {}".format(best_model))
 

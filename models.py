@@ -12,7 +12,7 @@ class AttentionDecoder(tf.keras.Model):
         self.F = tf.keras.layers.Embedding(vocab_size, dim_F)
         for i in range(layer):
             self.__setattr__("layer{}".format(i),
-                             tf.keras.layers.CuDNNLSTM(dim_rep,
+                             tf.keras.layers.LSTM(dim_rep,
                                                        return_sequences=True,
                                                        return_state=True,
                                                        recurrent_initializer='glorot_uniform'))
@@ -35,7 +35,7 @@ class AttentionDecoder(tf.keras.Model):
         states: ([batch, dim], [batch, dim])
         target: [batch, max_len] (padded with -1.)
         '''
-        mask = tf.not_equal(target, -1.)
+        mask = tf.not_equal(target, -1)
         h, c = states
         enc_y, _ = pad_tensor(enc_y)
         enc_y = tf.nn.dropout(enc_y, 1. - dropout)
@@ -213,7 +213,7 @@ class Seq2seqModel(BaseModel):
         self.E = tf.keras.layers.Embedding(in_vocab + 1, dim_E, mask_zero=True)
         for i in range(layer):
             self.__setattr__("layer{}".format(i),
-                             tf.keras.layers.CuDNNLSTM(dim_rep,
+                             tf.keras.layers.LSTM(dim_rep,
                                                        return_sequences=True,
                                                        return_state=True))
         print("I am seq2seq model, dim is {} and {} layered".format(
